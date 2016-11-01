@@ -1,6 +1,7 @@
 #ifndef BSTREE_H_
 #define BSTREE_H_
 
+#include <stdio.h>
 /*!*******************************************
 \brief:Binary Search Tree
 \author:sosoxu
@@ -35,6 +36,8 @@ public:
 	}
 };
 
+//如何提供一个visitor？
+
 template<typename T, typename Visitor = BSTreeVisitor<T> >
 class BSTree
 {
@@ -45,9 +48,15 @@ public:
 	BSTree(Visitor visitor);
 	~BSTree();
 
-	void preorder();
-	void inorder();
-	void postorder();
+    template<typename LVisitor>
+    void preorder(LVisitor visitor);
+
+    template<typename LVisitor>
+    void inorder(LVisitor visitor);
+
+    template<typename LVisitor>
+    void postorder(LVisitor visitor);
+
 	void preorderNonRec();
 	void inorderNonRec();
 	void postorderNonRec();
@@ -63,9 +72,14 @@ public:
 	void destory();
 	void dump();
 private:
-	void preorder(Node* node) const;
-	void inorder(Node* node) const;
-	void postorder(Node* node) const;
+    template<typename LVisitor>
+    void preorder(Node* node, LVisitor func) const;
+
+    template<typename LVisitor>
+    void inorder(Node* node, LVisitor func) const;
+
+    template<typename LVisitor>
+    void postorder(Node* node, LVisitor func) const;
 
 	Node* search(Node* node, T key) const;
 	Node* iterativeSearch(Node* node, T key) const;
@@ -78,7 +92,7 @@ private:
 
 private:
 	Node* m_root;
-	//Visitor m_visitor;
+    Visitor m_visitor;
 };
 
 
@@ -215,66 +229,72 @@ typename BSTree<T, Visitor>::Node* BSTree<T, Visitor>::search( T key )
 }
 
 template<typename T, typename Visitor>
-void BSTree<T, Visitor>::postorder( Node* node ) const
+template<typename LVisitor>
+void BSTree<T, Visitor>::postorder( Node* node, LVisitor func ) const
 {
 	if (node)
 	{
-		postorder(node->left);
-		postorder(node->right);
-		Visitor(node);
+        postorder(node->left, func);
+        postorder(node->right, func);
+        func(node);
 	}
 }
 
 template<typename T, typename Visitor>
-void BSTree<T, Visitor>::postorder()
+template<typename LVisitor>
+void BSTree<T, Visitor>::postorder( LVisitor visitor )
 {
-	postorder(m_root);
+    postorder(m_root, visitor);
 }
 
 template<typename T, typename Visitor>
-void BSTree<T, Visitor>::inorder( Node* node ) const
+template<typename LVisitor>
+void BSTree<T, Visitor>::inorder( Node* node, LVisitor func ) const
 {
 	if (node)
 	{
-		inorder(node->left);
-		Visitor(node);
-		inorder(node->right);
+        inorder(node->left, func);
+        func(node);
+        inorder(node->right, func);
 	}
 }
 
 template<typename T, typename Visitor>
-void BSTree<T, Visitor>::inorder()
+template<typename LVisitor>
+void BSTree<T, Visitor>::inorder( LVisitor visitor )
 {
-	inorder(m_root);
+    inorder(m_root, visitor);
 }
 
 template<typename T, typename Visitor>
-void BSTree<T, Visitor>::preorder( Node* node ) const
+template<typename LVisitor>
+void BSTree<T, Visitor>::preorder( Node* node, LVisitor func ) const
 {
 	if (node)
 	{
-		Visitor(node);
-		preorder(node->left);
-		preorder(node->right);
+        func(node);
+        preorder(node->left, func);
+        preorder(node->right, func);
 	}
 }
 
 template<typename T, typename Visitor>
-void BSTree<T, Visitor>::preorder()
+template<typename LVisitor>
+void BSTree<T, Visitor>::preorder( LVisitor visitor)
 {
-	preorder(m_root);
+    preorder(m_root, visitor);
 }
 
 template<typename T, typename Visitor>
 BSTree<T, Visitor>::BSTree()
-	:m_root(NULL)
+    :m_root(NULL), m_visitor(BSTreeVisitor<T>())
 {
 
 }
 
 template<typename T, typename Visitor /*= stdvisitor<T> */>
 BSTree<T, Visitor>::BSTree( Visitor visitor )
-	:m_root(NULL)//, m_visitor(visitor)
+    :m_root(NULL), m_visitor(visitor)
 {
 
 }
