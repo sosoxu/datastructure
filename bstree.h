@@ -57,9 +57,14 @@ public:
     template<typename LVisitor>
     void postorder(LVisitor visitor);
 
-	void preorderNonRec();
-	void inorderNonRec();
-	void postorderNonRec();
+	template<typename LVisitor>
+	void preorderNonRec(LVisitor visitor, int max_node);
+
+	template<typename LVisitor>
+	void inorderNonRec(LVisitor visitor, int max_node);
+
+	template<typename LVisitor>
+	void postorderNonRec(LVisitor visitor, int max_node);
 
 	Node* search(T key);
 	Node* iterativeSearch(T key); 
@@ -81,6 +86,15 @@ private:
     template<typename LVisitor>
     void postorder(Node* node, LVisitor func) const;
 
+	template<typename LVisitor>
+	void preorderNonRec(Node* node, LVisitor func, int max_node);
+	
+	template<typename LVisitor>
+	void inorderNonRec(Node* node, LVisitor func, int max_node);
+
+	template<typename LVisitor>
+	void postorderNonRec(Node* node, LVisitor func, int max_node);
+
 	Node* search(Node* node, T key) const;
 	Node* iterativeSearch(Node* node, T key) const;
 
@@ -95,7 +109,62 @@ private:
     Visitor m_visitor;
 };
 
+template<typename T, typename Visitor>
+template<typename LVisitor>
+void BSTree<T, Visitor>::preorderNonRec(Node* node, LVisitor func, int max_node)
+{
+	if (!node)
+		return;
+	//assert(max_node > 0);
+	Node** stack = new Node*[max_node];
+	int top = 0;
+	stack[++top] = node;
+	while (top > 0)
+	{
+		Node* p = stack[top--];
+		func(p);
+		if (p->right)
+			stack[++top] = p->right;
+		if (p->left)
+			stack[++top] = p->left;
+	}
+	delete[] stack;
+}
 
+template<typename T, typename Visitor>
+template<typename LVisitor>
+void BSTree<T, Visitor>::inorderNonRec(Node* node, LVisitor func, int max_node)
+{
+
+}
+
+template<typename T, typename Visitor>
+template<typename LVisitor>
+void BSTree<T, Visitor>::postorderNonRec(Node* node, LVisitor func, int max_node)
+{
+
+}
+
+template<typename T, typename Visitor>
+template<typename LVisitor>
+void BSTree<T, Visitor>::postorderNonRec( LVisitor visitor, int max_node )
+{
+
+}
+
+template<typename T, typename Visitor>
+template<typename LVisitor>
+void BSTree<T, Visitor>::inorderNonRec( LVisitor visitor, int max_node )
+{
+
+}
+
+template<typename T, typename Visitor>
+template<typename LVisitor>
+void BSTree<T, Visitor>::preorderNonRec( LVisitor visitor, int max_node )
+{
+	preorderNonRec(m_root, visitor, max_node);
+}
 
 template<typename T, typename Visitor>
 void BSTree<T, Visitor>::dump()
