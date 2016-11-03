@@ -32,7 +32,7 @@ public:
 	}
 	void stdvisitor(BSTNode<T>* node)
 	{
-		printf("%d", (int)node->key);
+        printf("%d ", (int)node->key);
 	}
 };
 
@@ -48,15 +48,19 @@ public:
 	BSTree(Visitor visitor);
 	~BSTree();
 
+    //DLR
     template<typename LVisitor>
     void preorder(LVisitor visitor);
 
+    //LDR
     template<typename LVisitor>
     void inorder(LVisitor visitor);
 
+    //LRD
     template<typename LVisitor>
     void postorder(LVisitor visitor);
 
+    //NonRec : non recurse
 	template<typename LVisitor>
 	void preorderNonRec(LVisitor visitor, int max_node);
 
@@ -65,6 +69,9 @@ public:
 
 	template<typename LVisitor>
 	void postorderNonRec(LVisitor visitor, int max_node);
+
+    template<typename LVisitor>
+    void levelorder(LVisitor visitor, int max_node);
 
 	Node* search(T key);
 	Node* iterativeSearch(T key); 
@@ -76,6 +83,9 @@ public:
 	void remove(T key);
 	void destory();
 	void dump();
+
+    int depth();
+    int count();
 private:
     template<typename LVisitor>
     void preorder(Node* node, LVisitor func) const;
@@ -95,6 +105,9 @@ private:
 	template<typename LVisitor>
 	void postorderNonRec(Node* node, LVisitor func, int max_node);
 
+    template<typename LVisitor>
+    void levelorder(Node* node, LVisitor visitor, int max_node);
+
 	Node* search(Node* node, T key) const;
 	Node* iterativeSearch(Node* node, T key) const;
 
@@ -102,12 +115,123 @@ private:
 	Node* maximum(Node* node);
 
 	void insert(Node*& node, Node* z);
-	Node* remove(Node*& node, Node* z);
+    Node* remove(Node*& node, Node* z);
 
+    int depth(Node* node, int max_node);
+    int count(Node* node, int max_node);
 private:
 	Node* m_root;
     Visitor m_visitor;
 };
+
+namespace {
+  template<typename T>
+  class StaticsCount
+  {
+  public:
+      StaticsCount()
+          :m_count(0){}
+      void operator()(BSTNode<T>* node)
+      {
+          ++m_count;
+      }
+  public:
+      int m_count;
+  };
+}
+template<typename T, typename Visitor>
+int BSTree<T, Visitor>::count(Node *node, int max_node)
+{
+    if (!node)
+        return 0;
+
+    StaticsCount<T> sc;
+    levelorder(node, sc, max_node);
+    return sc.m_count;
+}
+
+template<typename T, typename Visitor>
+int BSTree<T, Visitor>::count()
+{
+    return count(m_root, 50);
+}
+
+template<typename T, typename Visitor>
+template<typename LVisitor>
+void BSTree<T, Visitor>::levelorder(Node* node, LVisitor visitor, int max_node)
+{
+    if (!node)
+        return;
+    Node** stack = new Node*[max_node];
+    int top, bottom;
+    top = 0;
+    bottom = top + 1;
+    stack[top] = node;
+    Node* p = NULL;
+    while (top < bottom)
+    {
+        p = stack[top++];
+        visitor(p);
+        if (p->left)
+            stack[bottom++] = p->left;
+        if (p->right)
+            stack[bottom++] = p->right;
+    }
+    delete[] stack;
+}
+
+template<typename T, typename Visitor>
+template<typename LVisitor>
+void BSTree<T, Visitor>::levelorder(LVisitor visitor, int max_node)
+{
+    levelorder(m_root, visitor, max_node);
+}
+
+template<typename T, typename Visitor>
+int BSTree<T, Visitor>::depth( Node* node, int max_node )
+{
+    if (!node)
+        return 0;
+    Node** stack = new Node*[max_node];
+    int* ma = new int[max_node];
+    int top = 0, bottom = 0, level = 1;
+    stack[top] = node;
+    ma[top] = level;
+    bottom = top + 1;
+    Node* p = NULL;
+    int tl = 1;
+    while (top < bottom)
+    {
+        p = stack[top];
+        tl = ma[top];
+        ++top;
+        //if (top == bottom)
+        //    ++level;
+        if (p->left)
+        {
+            stack[bottom] = p->left;
+            ma[bottom] = tl + 1;
+            ++bottom;
+        }
+        if (p->right)
+        {
+            stack[bottom] = p->right;
+            ma[bottom] = tl + 1;
+            ++bottom;
+        }
+    }
+    level = ma[--top];
+    delete[] stack;
+    delete[] ma;
+    return level;
+
+}
+
+template<typename T, typename Visitor>
+int BSTree<T,Visitor>::depth()
+{
+    return depth(m_root, 50);
+}
 
 template<typename T, typename Visitor>
 template<typename LVisitor>
@@ -135,7 +259,24 @@ template<typename T, typename Visitor>
 template<typename LVisitor>
 void BSTree<T, Visitor>::inorderNonRec(Node* node, LVisitor func, int max_node)
 {
-
+    if (!node)
+        return;
+    Node** stack = new Node*[max_node];
+    int top = 0;
+    Node* p = node;
+    do
+    {
+        while(p)
+        {
+           stack[++top] = p;
+           p = p->left;
+        }
+        if (!top)
+            break;
+        p = stack[top--];
+        func(p);
+        p = p->right;
+    } while(top >= 0);
 }
 
 template<typename T, typename Visitor>
@@ -156,7 +297,7 @@ template<typename T, typename Visitor>
 template<typename LVisitor>
 void BSTree<T, Visitor>::inorderNonRec( LVisitor visitor, int max_node )
 {
-
+    inorderNonRec(m_root, visitor, max_node);
 }
 
 template<typename T, typename Visitor>
@@ -225,10 +366,11 @@ typename BSTree<T, Visitor>::Node* BSTree<T, Visitor>::minimum( Node* node )
 {
 	if (!node)
 		return NULL;
-	while(!node->left)
+    while(node->left)
 	{
 		node = node->left;
 	}
+    return node;
 }
 
 template<typename T, typename Visitor>
@@ -245,7 +387,7 @@ typename BSTree<T, Visitor>::Node* BSTree<T, Visitor>::maximum( Node* node )
 {
 	if (!node)
 		return NULL;
-	while (!node->right)
+    while (node->right)
 	{
 		node = node->right;
 	}
@@ -257,7 +399,7 @@ T BSTree<T, Visitor>::maximum()
 {
 	Node* node = maximum(m_root);
 	if (node)
-		return node->key;
+        return node->key;
 	return T();
 }
 
