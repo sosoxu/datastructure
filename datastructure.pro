@@ -4,9 +4,12 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    bstree.cpp
+    bstree.cpp \
+    bstreetest.cpp
 
 HEADERS += \
     bst.h \
-    bstree.h
+    bstree.h \
+    bstreetest.h \
+    testbase.h
 
