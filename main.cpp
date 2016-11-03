@@ -13,13 +13,16 @@ int main()
     tree.insert(7);
     tree.insert(1);
     tree.insert(10);
+    printf("\nmax : %d, min : %d\n", tree.maximum(), tree.minimun());
 	printf("preorder\n");
     tree.preorder(BSTreeVisitor<int>());
 	printf("\npreordernonrec\n");
 	tree.preorderNonRec(BSTreeVisitor<int>(), 10);
 	printf("\ninorder\n");
     tree.inorder(BSTreeVisitor<int>());
-	printf("\npostorder\n");
+    printf("\ninordernonrec\n");
+    tree.inorderNonRec(BSTreeVisitor<int>(), 10);
+    printf("\npostorder\n");
     tree.postorder(BSTreeVisitor<int>());
 	system("pause");
     return 0;
