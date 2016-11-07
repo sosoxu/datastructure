@@ -129,14 +129,16 @@ namespace {
   class StaticsCount
   {
   public:
-      StaticsCount()
-          :m_count(0){}
+      StaticsCount(int &val)
+          :m_count(val){}
       void operator()(BSTNode<T>* node)
       {
           ++m_count;
       }
+	  void reset() { m_count = 0; }
+	  int getCount() const { return m_count; }
   public:
-      int m_count;
+      int& m_count;
   };
 }
 template<typename T, typename Visitor>
@@ -145,7 +147,8 @@ int BSTree<T, Visitor>::count(Node *node, int max_node)
     if (!node)
         return 0;
 
-    StaticsCount<T> sc;
+	int sum = 0;
+    StaticsCount<T> sc(sum);
     levelorder(node, sc, max_node);
     return sc.m_count;
 }
