@@ -37,7 +37,6 @@ public:
 };
 
 //如何提供一个visitor？
-
 template<typename T, typename Visitor = BSTreeVisitor<T> >
 class BSTree
 {
@@ -86,7 +85,11 @@ public:
 
     int depth();
     int count();
-private:
+
+	Node* predecessor(Node* node);
+	Node* successor(Node* node);
+
+public:
     template<typename LVisitor>
     void preorder(Node* node, LVisitor func) const;
 
@@ -119,10 +122,57 @@ private:
 
     int depth(Node* node, int max_node);
     int count(Node* node, int max_node);
+
+	void destory(Node* node);
+
 private:
 	Node* m_root;
     Visitor m_visitor;
 };
+
+template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
+void BSTree<T, Visitor>::destory( Node* node )
+{
+	if (!node)
+		return;
+	destory(node->left);
+	destory(node->right);
+	delete node;
+}
+
+template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
+void BSTree<T, Visitor>::destory()
+{
+	destory(m_root);
+}
+
+template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
+typename BSTree<T, Visitor>::Node* BSTree<T, Visitor>::successor( Node* node )
+{
+	if (node->right)
+		return minimum(node->right);
+	Node* n = node->parent;
+	while (n && n->right == node)
+	{
+		node = n;
+		n = n->parent;
+	}
+	return n;
+}
+
+template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
+typename BSTree<T, Visitor>::Node* BSTree<T, Visitor>::predecessor( Node* node )
+{
+	if (node->left)
+		return maximum(node->left);
+	Node* n = node->parent;
+	while (n && node == n->left)
+	{
+		node = n;
+		n = n->parent;
+	}
+	return n;
+}
 
 namespace {
   template<typename T>
@@ -319,13 +369,68 @@ void BSTree<T, Visitor>::dump()
 template<typename T, typename Visitor>
 typename BSTree<T, Visitor>::Node* BSTree<T, Visitor>::remove( Node*& node, Node* z )
 {
+	Node* y = NULL;
+	Node* x = NULL;
+	if (!z->left && z->right)
+	{
+		if (z->parent)
+		{
+			z->parent->right = z->right;
+			z->right->parent = z->parent;
+		}
+		else
+		{
+			node = z->right;
+			z->right->parent = NULL;
+		}
+	}
+	else if (z->left && !z->right)
+	{
+		if (z->parent)
+		{
+			z->parent->left = z->left;
+			z->left->parent = z->parent;
+		}
+		else
+		{
+			node = z->left;
+			z->left->parent = NULL;
+		}
+	}
+	else if (z->left && z->right)
+	{
+		Node* max = maximum(z->left);
+		max->parent = z->parent;
+		if (z->parent)
+		{
+			if (z->parent->left == z)
+			{
+				z->parent->left = max;
+			}
+			else
+			{
+				z->parent->right = max;
+			}
+		}
+		else
+		{
+			node = max;
+		}
 
+		max->right = z->right;
+		max->left = (max == z->left) ? NULL : z->left;
+	}
+	return z;
 }
 
 template<typename T, typename Visitor>
 void BSTree<T, Visitor>::remove( T key )
 {
-
+	if (Node* node = search(m_root, key))
+	{
+		remove(m_root, node);
+		delete node;
+	}
 }
 
 template<typename T, typename Visitor>
@@ -516,7 +621,7 @@ BSTree<T, Visitor>::BSTree( Visitor visitor )
 template<typename T, typename Visitor>
 BSTree<T, Visitor>::~BSTree()
 {
-
+	destory();
 }
 
 #endif

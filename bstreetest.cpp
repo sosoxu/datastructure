@@ -19,10 +19,10 @@ void BstreeTest::test()
     tree.insert(1);
     tree.insert(10);
     printf("\nmax : %d, min : %d\n", tree.maximum(), tree.minimun());
-    printf("depth : %d, count : %d\n", tree.depth(), tree.count());
+    printf("\ndepth : %d, count : %d\n", tree.depth(), tree.count());
     printf("\nlevelorder:\n");
     tree.levelorder(BSTreeVisitor<int>(), 10);
-    printf("preorder\n");
+    printf("\npreorder\n");
     tree.preorder(BSTreeVisitor<int>());
     printf("\npreordernonrec\n");
     tree.preorderNonRec(BSTreeVisitor<int>(), 10);
