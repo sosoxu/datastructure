@@ -1,9 +1,11 @@
 #include "bstreetest.h"
 #include "bstree.h"
 
+REGISTER_TEST(BstreeTest)
 BstreeTest::BstreeTest()
 {
-
+	m_name = "bst";
+	m_info = "binary search tree";
 }
 
 void BstreeTest::test()
