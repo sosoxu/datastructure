@@ -9,12 +9,12 @@ message("You are running qmake on a generated .pro file. This may not work!")
 
 HEADERS += ./bst.h \
     ./bstree.h \
-    ./bstreetest.h \
-    ./testbase.h \
+    ./test/paramscontrols.h \
+    ./test/testbase.h \
     ./avltree.h \
-    ./paramscontrols.h
+    ./test/bstreetest.h
 SOURCES += ./bstree.cpp \
-    ./bstreetest.cpp \
+    ./test/bstreetest.cpp \
     ./main.cpp \
-    ./testbase.cpp \
-    ./paramscontrols.cpp
+    ./test/paramscontrols.cpp \
+    ./test/testbase.cpp

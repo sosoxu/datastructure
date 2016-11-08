@@ -7,7 +7,8 @@ TARGET = datastructure
 DESTDIR = ./debug
 CONFIG += debug console
 DEFINES += QT_LARGEFILE_SUPPORT
-INCLUDEPATH += .
+INCLUDEPATH += . \
+    ./test
 PRECOMPILED_HEADER = StdAfx.h
 DEPENDPATH += .
 MOC_DIR += ./GeneratedFiles/debug
