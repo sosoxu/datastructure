@@ -18,7 +18,7 @@ public:
 	BSTNode* right;
 
 public:
-	BSTNode(T val, BSTNode* parent, BSTNode* left, BSTNode* right)
+	BSTNode(T val, BSTNode* parent = NULL, BSTNode* left = NULL, BSTNode* right = NULL)
 		:key(val), parent(parent), left(left), right(right){}
 };
 
@@ -78,8 +78,8 @@ public:
 	T maximum();
 	T minimun();
 
-	void insert(T key);
-	void remove(T key);
+	virtual void insert(T key);
+	virtual void remove(T key);
 	void destory();
 	void dump();
 
@@ -117,18 +117,29 @@ public:
 	Node* minimum(Node* node);
 	Node* maximum(Node* node);
 
-	void insert(Node*& node, Node* z);
-    Node* remove(Node*& node, Node* z);
+	virtual void insertNode(Node*& node, Node* z);
+    virtual Node* remove(Node*& node, Node* z);
 
     int depth(Node* node, int max_node);
     int count(Node* node, int max_node);
 
 	void destory(Node* node);
 
-private:
+	//create subclass node
+	virtual Node* createNode(T val){ return new Node(val); }
+	//tmp node array
+	Node** createNodeArray(int max_node);
+protected:
 	Node* m_root;
     Visitor m_visitor;
 };
+
+template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
+typename BSTree<T, Visitor>::Node** BSTree<T, Visitor>::createNodeArray(int max_node)
+{
+    Node** stack = new Node*[max_node];
+	return stack;
+}
 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 void BSTree<T, Visitor>::destory( Node* node )
@@ -215,7 +226,7 @@ void BSTree<T, Visitor>::levelorder(Node* node, LVisitor visitor, int max_node)
 {
     if (!node)
         return;
-    Node** stack = new Node*[max_node];
+    Node** stack = createNodeArray(max_node);
     int top, bottom;
     top = 0;
     bottom = top + 1;
@@ -245,7 +256,7 @@ int BSTree<T, Visitor>::depth( Node* node, int max_node )
 {
     if (!node)
         return 0;
-    Node** stack = new Node*[max_node];
+	Node** stack = createNodeArray(max_node);
     int* ma = new int[max_node];
     int top = 0, bottom = 0, level = 1;
     stack[top] = node;
@@ -293,7 +304,7 @@ void BSTree<T, Visitor>::preorderNonRec(Node* node, LVisitor func, int max_node)
 	if (!node)
 		return;
 	//assert(max_node > 0);
-	Node** stack = new Node*[max_node];
+	Node** stack = createNodeArray(max_node);
 	int top = 0;
 	stack[++top] = node;
 	while (top > 0)
@@ -314,7 +325,7 @@ void BSTree<T, Visitor>::inorderNonRec(Node* node, LVisitor func, int max_node)
 {
     if (!node)
         return;
-    Node** stack = new Node*[max_node];
+	Node** stack = createNodeArray(max_node);
     int top = 0;
     Node* p = node;
     do
@@ -434,38 +445,38 @@ void BSTree<T, Visitor>::remove( T key )
 }
 
 template<typename T, typename Visitor>
-void BSTree<T, Visitor>::insert( Node*& node, Node* z )
+void BSTree<T, Visitor>::insertNode( Node*& node, Node* z )
 {
-	Node* insertNode = NULL;
+	Node* insertNde = NULL;
 	Node* tmp = node;
 	while (tmp)
 	{
-		insertNode = tmp;
+		insertNde = tmp;
 		if (tmp->key > z->key)
 			tmp = tmp->left;
 		else
 			tmp = tmp->right;
 	}
-	z->parent = insertNode;
-	if (!insertNode)
+	z->parent = insertNde;
+	if (!insertNde)
 	{
 		node = z;//without root on current branch
 	}
-	else if (insertNode->key > z->key)
+	else if (insertNde->key > z->key)
 	{
-		insertNode->left  = z;
+		insertNde->left  = z;
 	}
 	else
-		insertNode->right = z;
+		insertNde->right = z;
 }
 
 template<typename T, typename Visitor>
 void BSTree<T, Visitor>::insert( T key )
 {
-	Node* z = new Node(key, NULL, NULL, NULL);
+	Node* z = createNode(key);
 	if (z)
 	{
-		insert(m_root, z);
+		insertNode(m_root, z);
 	}
 }
 
