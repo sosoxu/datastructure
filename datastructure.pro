@@ -9,7 +9,7 @@ CONFIG += debug console
 DEFINES += QT_LARGEFILE_SUPPORT
 INCLUDEPATH += . \
     ./test
-PRECOMPILED_HEADER = StdAfx.h
+#PRECOMPILED_HEADER = StdAfx.h
 DEPENDPATH += .
 MOC_DIR += ./GeneratedFiles/debug
 OBJECTS_DIR += debug
