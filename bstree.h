@@ -117,7 +117,7 @@ public:
 	Node* minimum(Node* node);
 	Node* maximum(Node* node);
 
-	virtual void insertNode(Node*& node, Node* z);
+    virtual Node* insertNode(Node*& node, Node* z);
     virtual Node* remove(Node*& node, Node* z);
 
     int depth(Node* node, int max_node);
@@ -445,7 +445,7 @@ void BSTree<T, Visitor>::remove( T key )
 }
 
 template<typename T, typename Visitor>
-void BSTree<T, Visitor>::insertNode( Node*& node, Node* z )
+typename BSTree<T, Visitor>::Node* BSTree<T, Visitor>::insertNode( Node*& node, Node* z )
 {
 	Node* insertNde = NULL;
 	Node* tmp = node;
@@ -461,6 +461,7 @@ void BSTree<T, Visitor>::insertNode( Node*& node, Node* z )
 	if (!insertNde)
 	{
 		node = z;//without root on current branch
+        return node;
 	}
 	else if (insertNde->key > z->key)
 	{
@@ -468,6 +469,7 @@ void BSTree<T, Visitor>::insertNode( Node*& node, Node* z )
 	}
 	else
 		insertNde->right = z;
+    return insertNde;
 }
 
 template<typename T, typename Visitor>

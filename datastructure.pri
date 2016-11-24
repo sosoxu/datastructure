@@ -12,9 +12,12 @@ HEADERS += ./bst.h \
     ./test/paramscontrols.h \
     ./test/testbase.h \
     ./avltree.h \
-    ./test/bstreetest.h
+    ./test/bstreetest.h \
+    $$PWD/avltreetest.h \
+    $$PWD/utlity.h
 SOURCES += ./bstree.cpp \
     ./test/bstreetest.cpp \
     ./main.cpp \
     ./test/paramscontrols.cpp \
-    ./test/testbase.cpp
+    ./test/testbase.cpp \
+    $$PWD/avltreetest.cpp
