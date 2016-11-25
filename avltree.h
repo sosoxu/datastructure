@@ -39,8 +39,14 @@ public:
     static AVLNode* rrrotate(AVLNode* node);
     static AVLNode* lrrotate(AVLNode* node);
     static AVLNode* rlrotate(AVLNode* node);
+	static AVLNode* avlNode2BSTNode(Node* node);
 };
 
+template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
+typename AVLTree<T, Visitor>::AVLNode* AVLTree<T, Visitor>::avlNode2BSTNode( Node* node )
+{
+	return static_cast<AVLNode*>(node);
+}
 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 void AVLTree<T, Visitor>::updateHeight(AVLNode* node)
