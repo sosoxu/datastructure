@@ -3,7 +3,6 @@
 
 #include "bstree.h"
 #include "utlity.h"
-#include <QDebug>
 
 template<typename T>
 class AVLTreeNode : public BSTNode<T>
@@ -26,11 +25,15 @@ public:
 
 	virtual void insert(T key);
     virtual Node* insertNode(Node*& node, Node* z);
-    //virtual Node* insertNode(Node*& node, Node* z);
 	virtual Node* remove(Node*& node, Node* z);
 
 public:
-    static int height(AVLNode* node) { return node->height; }
+    static int height(AVLNode* node) { 
+		if (node)
+			return node->height;
+		else
+			return 0;
+	}
     static void updateHeight(AVLNode* node);
     static AVLNode* llrotate(AVLNode* node);
     static AVLNode* rrrotate(AVLNode* node);
@@ -42,7 +45,12 @@ public:
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 void AVLTree<T, Visitor>::updateHeight(AVLNode* node)
 {
-    node->height = max(height(static_cast<AVLNode*>(node->left)), height(static_cast<AVLNode*>(node->right))) + 1;
+	AVLNode* left = static_cast<AVLNode*>(node->left);
+	AVLNode* right = static_cast<AVLNode*>(node->right);
+	if (!left && !right)
+		node->height = 1;
+	else
+		node->height = max(height(left), height(right)) + 1;
 }
 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
@@ -51,10 +59,7 @@ void AVLTree<T, Visitor>::insert( T key )
 	Node* z = createNode(key);
 	if (z)
 	{
-        qDebug() << "insert : " << key;
         insertNode(BSTree<T,Visitor>::m_root, z);
-
-		//
 	}
 }
 
@@ -65,8 +70,6 @@ typename AVLTree<T, Visitor>::AVLNode* AVLTree<T, Visitor>::llrotate( AVLNode* n
 	node->left = b->right;
 	b->right = node;
 
-    //node->height = max(height(node->left), height(node->right)) + 1;
-    //b->height = max(height(b->left), node->height) + 1;
     updateHeight(node);
     updateHeight(b);
     return b;
@@ -107,18 +110,15 @@ typename BSTree<T, Visitor>::Node* AVLTree<T, Visitor>::remove( Node*& node, Nod
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 typename BSTree<T, Visitor>::Node* AVLTree<T, Visitor>::insertNode( Node*& node, Node* z )
 {
-    qDebug() << "insertNode";
-	//BSTree<T, Visitor>::insertNode(node, z);
 	AVLNode* x = static_cast<AVLNode* >(z);
     AVLNode* n = static_cast<AVLNode* >(node);
 	if (!node)
 	{
-        qDebug() << "1";
         node = z;
+		n = static_cast<AVLNode* >(node);
     }
     else if (z->key < node->key)
     {
-        qDebug() << "2";
         node->left = insertNode(node->left, z);
         if (height(static_cast<AVLNode*>(node->left)) - height(static_cast<AVLNode*>(node->right)) == 2)
         {
@@ -126,6 +126,7 @@ typename BSTree<T, Visitor>::Node* AVLTree<T, Visitor>::insertNode( Node*& node,
                 node = llrotate(n);
             else
                 node = lrrotate(n);
+			n = static_cast<AVLNode* >(node);
         }
     }
     else if (z->key > node->key)
@@ -133,15 +134,15 @@ typename BSTree<T, Visitor>::Node* AVLTree<T, Visitor>::insertNode( Node*& node,
         node->right = insertNode(node->right, z);
         if (height(static_cast<AVLNode*>(node->right)) - height(static_cast<AVLNode*>(node->left)) == 2)
         {
-            if (z->key < node->right->key)
+            if (z->key > node->right->key)
                 node = rrrotate(n);
             else
                 node = rlrotate(n);
+			n = static_cast<AVLNode* >(node);
         }
     }
 
     updateHeight(n);
-    qDebug() << "insertNode " << n->key << " " << n->height;
     return node;
 }
 
