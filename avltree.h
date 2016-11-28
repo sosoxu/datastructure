@@ -26,6 +26,7 @@ public:
 	virtual void insert(T key);
     virtual Node* insertNode(Node*& node, Node* z);
 	virtual Node* remove(Node*& node, Node* z);
+	Node* insertNodeEx(Node* node, Node *z);
 
 public:
     static int height(AVLNode* node) { 
@@ -34,6 +35,14 @@ public:
 		else
 			return 0;
 	}
+	static int heightEx(Node* node)
+	{
+		if (AVLNode* avl = BSTNode2AVLNode(node))
+			return avl->height;
+		else
+			return 0;
+	}
+
     static void updateHeight(AVLNode* node);
 
 	
@@ -43,6 +52,48 @@ public:
     static AVLNode* rlrotate(AVLNode* node);
 	static AVLNode* BSTNode2AVLNode(Node* node);
 };
+
+template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
+typename BSTree<T, Visitor>::Node* AVLTree<T, Visitor>::insertNodeEx( Node* node, Node *z )
+{
+	Node* insertRoot = node;
+	if (!node)
+		insertRoot = z;
+	else if (z->key < node->key)
+	{
+		node->left = insertNodeEx(node->left, z);
+		if (heightEx(node->left) - heightEx(node->right) == 2)
+		{
+			Node* lt = node->left;
+			if (heightEx(lt->left) > heightEx(lt->right))
+			{
+				insertRoot = llrotate(BSTNode2AVLNode(node));
+			}
+			else
+			{
+				insertRoot = lrrotate(BSTNode2AVLNode(node));
+			}
+		}
+	}
+	else if (z->key > node->key)
+	{
+		node->right = insertNodeEx(node->right, z);
+		if (heightEx(node->right) - heightEx(node->left) == 2)
+		{
+			Node* rt = node->right;
+			if (heightEx(rt->right) > heightEx(rt->left))
+			{
+				insertRoot = rrrotate(BSTNode2AVLNode(node));
+			}
+			else
+			{
+				insertRoot = rlrotate(BSTNode2AVLNode(node));
+			}
+		}
+	}
+	updateHeight(BSTNode2AVLNode(insertRoot));
+	return insertRoot;
+}
 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 typename AVLTree<T, Visitor>::AVLNode* AVLTree<T, Visitor>::BSTNode2AVLNode( Node* node )
@@ -65,10 +116,21 @@ template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 void AVLTree<T, Visitor>::insert( T key )
 {
 	Node* z = createNode(key);
+#if 0
+	if (!BSTree<T,Visitor>::m_root)
+		BSTree<T,Visitor>::m_root = z;
+	else
+	{
+		Node* ind = insertNodeEx(BSTree<T,Visitor>::m_root, z);
+		if (ind != BSTree<T,Visitor>::m_root)
+			BSTree<T,Visitor>::m_root = ind;
+	}
+#else
 	if (z)
 	{
         insertNode(BSTree<T,Visitor>::m_root, z);
 	}
+#endif
 }
 
 //              G                                  P
@@ -145,10 +207,10 @@ typename BSTree<T, Visitor>::Node* AVLTree<T, Visitor>::remove( Node*& node, Nod
 	if (node->key > z->key)
 	{
 		node->left = remove(node->left, z);
-		if (height(BSTNode2AVLNode(node->right)) - height(BSTNode2AVLNode(node->left)) == 2)
+		if (heightEx(node->right) - heightEx(node->left) == 2)
 		{
 			Node* n = node->right;
-			if (height(BSTNode2AVLNode(n->left)) > height(BSTNode2AVLNode(n->right)))
+			if (heightEx(n->left) > heightEx(n->right))
 				node = rlrotate(BSTNode2AVLNode(node));
 			else
 				node = rrrotate(BSTNode2AVLNode(node));
@@ -156,10 +218,10 @@ typename BSTree<T, Visitor>::Node* AVLTree<T, Visitor>::remove( Node*& node, Nod
 	}
 	else if (node->key < z->key)
 	{
-		if (height(BSTNode2AVLNode(node->left)) - height(BSTNode2AVLNode(node->left)) == 2)
+		if (heightEx(node->left) - heightEx(node->left) == 2)
 		{
 			Node* n = node->left;
-			if (height(BSTNode2AVLNode(n->left)) > height(BSTNode2AVLNode(n->right)))
+			if (heightEx(n->left) > heightEx(n->right))
 				node = llrotate(BSTNode2AVLNode(node));
 			else
 				node = lrrotate(BSTNode2AVLNode(node));
@@ -169,9 +231,18 @@ typename BSTree<T, Visitor>::Node* AVLTree<T, Visitor>::remove( Node*& node, Nod
 	{
 		if (node->left && node->right)
 		{
-			Node* n = maximum(node->left);
-			node->key = n->key;
-			node->left = remove(node->left, n);
+			if (heightEx(node->left) > heightEx(node->right))
+			{
+				Node* n = maximum(node->left);
+				node->key = n->key;
+				node->left = remove(node->left, n);
+			}
+			else
+			{
+				Node* n = minimum(node->right);
+				node->key = n->key;
+				node->right = remove(node->right, n);
+			}
 		}
 		else
 		{
@@ -197,7 +268,7 @@ typename BSTree<T, Visitor>::Node* AVLTree<T, Visitor>::insertNode( Node*& node,
     else if (z->key < node->key)
     {
         node->left = insertNode(node->left, z);
-        if (height(BSTNode2AVLNode(node->left)) - height(BSTNode2AVLNode(node->right)) == 2)
+        if (heightEx(node->left) - heightEx(node->right) == 2)
         {
             if (z->key < node->left->key)
                 node = llrotate(n);
@@ -209,7 +280,7 @@ typename BSTree<T, Visitor>::Node* AVLTree<T, Visitor>::insertNode( Node*& node,
     else if (z->key > node->key)
     {
         node->right = insertNode(node->right, z);
-        if (height(BSTNode2AVLNode(node->right)) - height(BSTNode2AVLNode(node->left)) == 2)
+        if (heightEx(node->right) - heightEx(node->left) == 2)
         {
             if (z->key > node->right->key)
                 node = rrrotate(n);
