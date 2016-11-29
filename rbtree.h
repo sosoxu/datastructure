@@ -3,6 +3,9 @@
 
 #include "bstree.h"
 
+#define rb_red 0
+#define rb_black 1
+
 template<typename T>
 class RBTreeNode : public BSTNode<T>
 {
