@@ -135,12 +135,12 @@ void AVLTree<T, Visitor>::insert( T key )
 }
 
 //              G                                  P
-//            /     \                             /      \
-//           P     Gr     =>            X        G
-//        /     \                             /          /    \
-//      X      Pr                         Xl       Pr    Gr
-//     / 
-//    Xl
+//            /   \                             /     \
+//           P     Gr     =>                   X       G
+//         /   \                             /        /  \
+//        X     Pr                         Xl       Pr    Gr
+//      /
+//     Xl
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 typename AVLTree<T, Visitor>::AVLNode* AVLTree<T, Visitor>::llrotate( AVLNode* node )
 {
@@ -154,12 +154,12 @@ typename AVLTree<T, Visitor>::AVLNode* AVLTree<T, Visitor>::llrotate( AVLNode* n
 }
 
 //         G                                      P
-//       /      \                                 /     \
-//     Gl     P          =>              G      X
-//              /   \                         /   \       \
-//            Pl   X                     Gl   Pl     Xr
-//                    \
-//                   Xr
+//       /   \                                 /     \
+//     Gl     P          =>                    G      X
+//          /   \                            /   \      \
+//         Pl    X                          Gl   Pl      Xr
+//                 \
+//                  Xr
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 typename AVLTree<T, Visitor>::AVLNode* AVLTree<T, Visitor>::rrrotate( AVLNode* node )
 {
@@ -172,12 +172,12 @@ typename AVLTree<T, Visitor>::AVLNode* AVLTree<T, Visitor>::rrrotate( AVLNode* n
     return b;
 }
 
-//          G                                   G                               X           
-//        /      \                               /    \                           /     \
+//          G                                  G                           X
+//        /   \                             /    \                       /   \
 //       P     Gr                          X     Gr                     P      G
-//      /   \               =>             /   \                =>      /    \     /   \
+//      /  \               =>             /   \                =>      / \    /  \
 //     Pl   X                            P    Xr                     Pl   Xl  Xr  Gr
-//          /   \                          /   \
+//          / \                         /  \
 //        Xl   Xr                      Pl  Xl
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 typename AVLTree<T, Visitor>::AVLNode* AVLTree<T, Visitor>::lrrotate( AVLNode* node )
@@ -186,13 +186,13 @@ typename AVLTree<T, Visitor>::AVLNode* AVLTree<T, Visitor>::lrrotate( AVLNode* n
     return llrotate(node);
 }
 
-//          G                               G                                       X
-//        /      \                          /     \                                   /     \
-//       Gl     P                      Gl     X                              G      P
-//               /   \        =>                /   \                 =>      /   \     /   \
-//             X    Pr                       Xl    P                      Gl   Xl  Xr  Pr 
-//           /   \                                      /   \
-//        Xl    Xr                                  Xr   Pr
+//           G                                G                                   X
+//        /    \                           /    \                               /   \
+//       Gl     P                        Gl      X                             G     P
+//             /  \        =>                  /   \                 =>      /  \   /  \
+//             X    Pr                       Xl    P                       Gl   Xl  Xr   Pr
+//           /   \                                /   \
+//        Xl    Xr                               Xr   Pr
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 typename AVLTree<T, Visitor>::AVLNode* AVLTree<T, Visitor>::rlrotate( AVLNode* node )
 {
@@ -234,13 +234,13 @@ typename BSTree<T, Visitor>::Node* AVLTree<T, Visitor>::remove( Node*& node, Nod
 		{
 			if (heightEx(node->left) > heightEx(node->right))
 			{
-				Node* n = maximum(node->left);
+                Node* n = BSTree<T, Visitor>::maximum(node->left);
 				node->key = n->key;
 				node->left = remove(node->left, n);
 			}
 			else
 			{
-				Node* n = minimum(node->right);
+                Node* n = BSTree<T, Visitor>::minimum(node->right);
 				node->key = n->key;
 				node->right = remove(node->right, n);
 			}

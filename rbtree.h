@@ -11,6 +11,8 @@ template<typename T>
 class RBTreeNode : public BSTNode<T>
 {
 public:
+    static const bool red = false;
+    static const bool black = true;
 	bool color; // 0 red;1 black
 public:
 	RBTreeNode(T val, RBTreeNode* parent = NULL, RBTreeNode* left = NULL, RBTreeNode* right = NULL, bool color = 0)
@@ -32,8 +34,27 @@ public:
 
 public:
 	void leftrotate(Node*& root, Node* node);
-	void rightrotate(Node*&root, Node* node);
+    void rightrotate(Node*&root, Node* node);
+    void insertFixup(RBNode*& root, RBNode* z);
+
+    static RBNode* BSTNode2RBNode(Node* node);
+    static bool getColor(Node* node);
 };
+
+template<typename T, typename Visitor>
+typename RBTree<T,Visitor>::RBNode* RBTree<T, Visitor>::BSTNode2RBNode(Node *node)
+{
+    return static_cast<RBNode*>(node);
+}
+
+template<typename T, typename Visitor>
+bool RBTree<T, Visitor>::getColor(Node *node)
+{
+    RBNode* rbnode = BSTNode2RBNode(node);
+    if (rbnode)
+        return rbnode->color;
+    return RBNode::black;
+}
 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 void DT::RBTree<T, Visitor>::rightrotate( Node*&root, Node* node )
@@ -84,7 +105,36 @@ void RBTree<T, Visitor>::insert( T key )
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 typename BSTree<T, Visitor>::Node* RBTree<T, Visitor>::insertNode( Node*& node, Node* z )
 {
-	return NULL;
+    Node* y = NULL;
+    Node* x = node;
+    while (x)
+    {
+        y = x;
+        if (z->key < x->key)
+            x = x->left;
+        else
+            x = x->right;
+    }
+    z->parent = y;
+    if (y)
+        node = z;
+    else if (z->key < y->key)
+        y->left = z;
+    else
+        y->right = z;
+    RBNode* rbnode = BSTNode2RBNode(z);
+    rbnode->color = RBNode::red;
+    return node;
+}
+
+
+template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
+void RBTree<T, Visitor>::insertFixup(RBNode*& root, RBNode* z)
+{
+    RBNode* rbroot = BSTNode2RBNode(node);
+    RBNode* rbz = BSTNode2RBNode(z);
+    RBNode* p
+    while ()
 }
 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
