@@ -1,10 +1,13 @@
 #include "paramscontrols.h"
 #include <iostream>
+#include <vector>
+#include "utlity.h"
 
 template<typename T>
 class A
 {
-
+public:
+	void fun(){};
 };
 template<typename T>
 class B : public A<T>
@@ -23,7 +26,6 @@ public:
 };
 int main(int argc, char *argv[])
 {
-	C<int> c;
 	ParamsControls pcs;
 	pcs.exec(argc, argv);
 

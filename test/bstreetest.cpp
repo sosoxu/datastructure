@@ -1,6 +1,7 @@
 #include "bstreetest.h"
 #include "bstree.h"
 
+using namespace DT;
 REGISTER_TEST(BstreeTest)
 BstreeTest::BstreeTest()
 {

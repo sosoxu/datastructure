@@ -3,6 +3,7 @@
 
 #include "bstree.h"
 
+namespace DT{
 #define rb_red 0
 #define rb_black 1
 
@@ -28,7 +29,51 @@ public:
 	virtual void insert(T key);
 	virtual Node* insertNode(Node*& node, Node* z);
 	virtual Node* remove(Node*& node, Node* z);
+
+public:
+	void leftrotate(Node*& root, Node* node);
+	void rightrotate(Node*&root, Node* node);
 };
+
+template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
+void DT::RBTree<T, Visitor>::rightrotate( Node*&root, Node* node )
+{
+	Node* y = node->left;
+	node->left = y->right;
+	if (y->right)
+		y->right->parent = node;
+	y->parent = node->parent;
+	if (!node->parent)
+		root = y;
+	else
+		if (node == node->parent->left)
+			node->parent->left = y;
+		else
+			node->parent->right = y;
+	y->right = node;
+	node->parent = y;
+}
+
+template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
+void DT::RBTree<T, Visitor>::leftrotate( Node*& root, Node* node )
+{
+	Node* y = node->right;
+	node->right = y->left;
+	if (y->left)
+		y->left->parent = node;
+	y->parent = node->parent;
+	if (!node->parent)
+		root = y;
+	else
+	{
+		if (node == node->parent->left)
+			node->parent->left = y;
+		else
+			node->parent->right = y;
+	}
+	y->left = node;
+	node->parent = y;
+}
 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 void RBTree<T, Visitor>::insert( T key )
@@ -47,5 +92,5 @@ typename BSTree<T, Visitor>::Node* RBTree<T, Visitor>::remove( Node*& node, Node
 {
 	return NULL;
 }
-
+}
 #endif

@@ -4,6 +4,7 @@
 #include "bstree.h"
 #include "utlity.h"
 
+namespace DT{
 template<typename T>
 class AVLTreeNode : public BSTNode<T>
 {
@@ -294,5 +295,6 @@ typename BSTree<T, Visitor>::Node* AVLTree<T, Visitor>::insertNode( Node*& node,
     return node;
 }
 
+}
 
 #endif

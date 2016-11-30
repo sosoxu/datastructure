@@ -1,6 +1,7 @@
 #include "rbtreetest.h"
 #include "rbtree.h"
 
+using namespace DT;
 REGISTER_TEST(RBTreeTest)
 RBTreeTest::RBTreeTest()
 {

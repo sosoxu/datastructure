@@ -7,7 +7,7 @@
 \author:sosoxu
 \date:2016/11/1
 **********************************************/
-
+namespace DT{
 template<typename T>
 class BSTNode
 {
@@ -636,5 +636,5 @@ BSTree<T, Visitor>::~BSTree()
 {
 	destory();
 }
-
+}
 #endif

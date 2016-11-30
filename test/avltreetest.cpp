@@ -1,6 +1,7 @@
 #include "avltreetest.h"
 #include "avltree.h"
 
+using namespace DT;
 REGISTER_TEST(AVLTreeTest)
 AVLTreeTest::AVLTreeTest()
 {
