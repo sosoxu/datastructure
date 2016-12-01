@@ -33,8 +33,8 @@ public:
 	virtual Node* remove(Node*& node, Node* z);
 
 public:
-	void leftrotate(Node*& root, Node* node);
-    void rightrotate(Node*&root, Node* node);
+	Node* leftrotate(Node* root, Node* node);
+    Node* rightrotate(Node*root, Node* node);
     void insertFixup(RBNode*& root, RBNode* z);
 
     static RBNode* BSTNode2RBNode(Node* node);
@@ -57,7 +57,7 @@ bool RBTree<T, Visitor>::getColor(Node *node)
 }
 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
-void DT::RBTree<T, Visitor>::rightrotate( Node*&root, Node* node )
+typename DT::RBTree<T, Visitor>::Node* DT::RBTree<T, Visitor>::rightrotate( Node* root, Node* node )
 {
 	Node* y = node->left;
 	node->left = y->right;
@@ -73,10 +73,11 @@ void DT::RBTree<T, Visitor>::rightrotate( Node*&root, Node* node )
 			node->parent->right = y;
 	y->right = node;
 	node->parent = y;
+	return root;
 }
 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
-void DT::RBTree<T, Visitor>::leftrotate( Node*& root, Node* node )
+typename DT::RBTree<T, Visitor>::Node* DT::RBTree<T, Visitor>::leftrotate( Node* root, Node* node )
 {
 	Node* y = node->right;
 	node->right = y->left;
@@ -94,12 +95,14 @@ void DT::RBTree<T, Visitor>::leftrotate( Node*& root, Node* node )
 	}
 	y->left = node;
 	node->parent = y;
+	return root;
 }
 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 void RBTree<T, Visitor>::insert( T key )
 {
-
+	Node* z = createNode(key);
+	insertNode(BSTree<T,Visitor>::m_root, z);
 }
 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
@@ -116,7 +119,7 @@ typename BSTree<T, Visitor>::Node* RBTree<T, Visitor>::insertNode( Node*& node, 
             x = x->right;
     }
     z->parent = y;
-    if (y)
+    if (!y)
         node = z;
     else if (z->key < y->key)
         y->left = z;
@@ -124,6 +127,8 @@ typename BSTree<T, Visitor>::Node* RBTree<T, Visitor>::insertNode( Node*& node, 
         y->right = z;
     RBNode* rbnode = BSTNode2RBNode(z);
     rbnode->color = RBNode::red;
+	RBNode* root = (RBNode*)(node);
+	insertFixup(root, BSTNode2RBNode(z));
     return node;
 }
 
@@ -131,10 +136,60 @@ typename BSTree<T, Visitor>::Node* RBTree<T, Visitor>::insertNode( Node*& node, 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
 void RBTree<T, Visitor>::insertFixup(RBNode*& root, RBNode* z)
 {
-    RBNode* rbroot = BSTNode2RBNode(node);
-    RBNode* rbz = BSTNode2RBNode(z);
-    RBNode* p
-    while ()
+	RBNode* p = NULL;
+    while ((p = BSTNode2RBNode(z->parent)) && p->color == RBNode::red)
+	{
+		RBNode* g = BSTNode2RBNode(p->parent);
+		if (p == g->left)
+		{
+			RBNode* sp = BSTNode2RBNode(g->right);
+			if (sp && sp->color == RBNode::red)	//parent sibling : red
+			{
+				sp->color = RBNode::black;
+				p->color = RBNode::black;
+				g->color = RBNode::red;
+				z = g;
+				continue;
+			}
+
+			if (p->right == z)
+			{
+				RBNode* t = z;
+				root = BSTNode2RBNode(leftrotate(root, p));
+				p = z;
+				z = t;
+			}
+
+			p->color = RBNode::black;
+			g->color = RBNode::red;
+			root = BSTNode2RBNode(rightrotate(root, g));
+		}
+		else
+		{
+			RBNode* sp = BSTNode2RBNode(g->left);
+			if (sp && sp->color == RBNode::red)	//parent sibling : red
+			{
+				sp->color = RBNode::black;
+				p->color = RBNode::black;
+				g->color = RBNode::red;
+				z = g;
+				continue;
+			}
+
+			if (p->left == z)
+			{
+				RBNode* t = z;
+				root = BSTNode2RBNode(rightrotate(root, p));
+				p = z;
+				z = t;
+			}
+
+			p->color = RBNode::black;
+			g->color = RBNode::red;
+			root = BSTNode2RBNode(leftrotate(root, g));
+		}
+	}
+	root->color = RBNode::black;
 }
 
 template<typename T, typename Visitor /*= BSTreeVisitor<T> */>
