@@ -20,6 +20,9 @@ public:
 public:
 	BSTNode(T val, BSTNode* parent = NULL, BSTNode* left = NULL, BSTNode* right = NULL)
 		:key(val), parent(parent), left(left), right(right){}
+	virtual void dump(){
+		printf("%d  ", (int)key);
+	}
 };
 
 template<typename T>
@@ -32,7 +35,7 @@ public:
 	}
 	void stdvisitor(BSTNode<T>* node)
 	{
-        printf("%d ", (int)node->key);
+		node->dump();
 	}
 };
 
