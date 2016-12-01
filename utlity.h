@@ -113,6 +113,58 @@ void __quicksort(InputIter first, InputIter last, T t, Pre _pre)
 	}
 }
 
+template<typename InputIter, typename T, typename Pre>
+InputIter lowerbound(InputIter first, InputIter last, const T& key, Pre _pre)
+{
+	int n = (int)(last - first);
+	InputIter mid;
+	int half;
+	while (n > 0)
+	{
+		half = n >> 1;
+		mid = first + half;
+		if (_pre(*mid , key))
+		{
+			first = mid + 1;
+			n = n - half - 1;
+		}
+		else
+			n = half;
+	}
+	return first;
+}
+
+template<typename InputIter, typename T, typename Pre>
+InputIter upperbound(InputIter first, InputIter last, const T& key, Pre _pre)
+{
+	int n = (int)(last - first);
+	InputIter mid;
+	int half;
+	while (n > 0)
+	{
+		half = n >> 1;
+		mid = first + half;
+		if (_pre(*mid , key))
+		{
+			n = half;
+		}
+		else
+		{
+			first = mid + 1;
+			n = n - half - 1;
+		}
+	}
+	return first;
+}
+
+template<typename InputIter, typename T, typename Pre>
+bool binaryfind(InputIter first, InputIter last, T key, Pre _pre)
+{
+	InputIter it = lowerbound(first, last, key, _pre);
+	return it != last && _pre(*it, key);
+}
+
+
 }
 #endif // UTLITY
 
