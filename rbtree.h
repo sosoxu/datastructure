@@ -19,7 +19,7 @@ public:
 		:BSTNode<T>(val, parent, left, right), color(color){}
 	virtual void dump()
 	{
-		printf("%d(%c)  ", (int)key, color == red ? 'r' : 'b');
+        printf("%d(%c)  ", (int)BSTNode<T>::key, color == red ? 'r' : 'b');
 	}
 };
 
